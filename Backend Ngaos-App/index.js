@@ -97,6 +97,31 @@ app.post('/api/kegiatan-sholat', async (req, res) => {
   }
 });
 
+app.get("/api/catatan-sholat", async (req, res) => {
+  try {
+    // Ambil catatan sholat dari database
+    const catatanSholat = await prisma.kegiatanSholat.findMany();
+
+    // Buat array untuk menyimpan catatan sholat dan informasi isChecked
+    const catatanSholatArray = [];
+    catatanSholat.forEach((catatan) => {
+      catatanSholatArray.push({
+        sholatName: catatan.sholatName,
+        catatan: catatan.catatan,
+        isChecked: catatan.isChecked
+      });
+    });
+
+    // Kirim respons dengan data catatan sholat
+    res.status(200).json(catatanSholatArray);
+  } catch (error) {
+    console.error("Error fetching catatan sholat:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000");

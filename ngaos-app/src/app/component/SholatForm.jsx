@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 function SholatForm({ imsakiyah }) {
@@ -7,6 +7,7 @@ function SholatForm({ imsakiyah }) {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedSholat, setSelectedSholat] = useState("");
   const [catatan, setCatatan] = useState("");
+  const [catatanData, setCatatanData] = useState([]);
 
   const handleTambahCatatan = (sholatName) => {
     setShowPopup(true);
@@ -17,7 +18,7 @@ function SholatForm({ imsakiyah }) {
     try {
       // Kirim request ke API
       const response = await axios.post("http://localhost:5000/api/kegiatan-sholat", {
-        username : localStorage.getItem('name'),
+        username: localStorage.getItem("name"),
         sholatName: selectedSholat,
         isChecked: true,
         catatan: catatan,
@@ -36,6 +37,20 @@ function SholatForm({ imsakiyah }) {
     }
   };
 
+  const getData = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/catatan-sholat");
+      console.log(res.data);
+      setCatatanData(res.data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <>
       {imsakiyah !== null ? (
@@ -43,24 +58,32 @@ function SholatForm({ imsakiyah }) {
           const timeEntry = imsakiyah.time[data.name.toLowerCase()];
           const time = timeEntry ? timeEntry : "Belum tersedia";
 
-          const currentHour = 12;
+          const currentHour = 1;
           const currentMinute = 16;
 
           const [sholatHour, sholatMinute] = time.split(":").map(Number);
 
           const isTimePassed = currentHour > sholatHour || (currentHour === sholatHour && currentMinute > sholatMinute);
 
+          // Mendapatkan catatan dari respons API berdasarkan nama sholat
+          const catatan = catatanData.find((item) => item.sholatName === data.name);
+
           return (
             <div key={index} className={`flex justify-between my-4 text-white shadow-xl p-3 rounded ${isTimePassed ? "bg-red-400" : "bg-green-700"}`}>
-              <div className="flex items-center ">
-                <input type="checkbox" disabled={isTimePassed} />
+              <div className="flex items-center">
+                <input type="checkbox" checked={catatan && catatan.isChecked} disabled={isTimePassed} />
                 <div className="w-full ml-3">
                   <h1 className="text-lg font-semibold">{data.name}</h1>
                   <p className="text-sm">{time}</p>
+                  <p className="text-sm">{catatan ? catatan.catatan : "Belum ada catatan"}</p> {/* Menampilkan catatan */}
                 </div>
               </div>
               <div className="flex gap-2 items-center">
-                <button disabled={isTimePassed} className="bg-white disabled:text-gray-400 disabled:cursor-not-allowed px-4 h-fit py-2 rounded shadow-xl text-black font-bold hover:cursor-pointer" onClick={() => handleTambahCatatan(data.name)}>
+                <button
+                  disabled={isTimePassed}
+                  className="bg-white disabled:text-gray-400 disabled:cursor-not-allowed px-4 h-fit py-2 rounded shadow-xl text-black font-bold hover:cursor-pointer"
+                  onClick={() => handleTambahCatatan(data.name)}
+                >
                   Tambah Catatan
                 </button>
               </div>

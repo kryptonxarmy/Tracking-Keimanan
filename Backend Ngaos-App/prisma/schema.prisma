@@ -19,3 +19,14 @@ model User {
   name  String?
   password String
 }
+
+
+model KegiatanSholat {
+  id          Int      @id @default(autoincrement())
+  username    String
+  sholatName  String
+  isChecked   Boolean
+  catatan     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

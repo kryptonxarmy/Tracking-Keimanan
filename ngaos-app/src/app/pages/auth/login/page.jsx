@@ -14,6 +14,7 @@ const Login = () => {
             });
             console.log(response.data);
             if(response.data.status == 200){
+                localStorage.setItem('name', response.data.name)
                 window.location.href = "/pages/dashboard"
                 setIsLoading(false)
             }

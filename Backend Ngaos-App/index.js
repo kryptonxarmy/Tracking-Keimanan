@@ -69,12 +69,34 @@ app.post("/login", async (req, res) => {
     }
 
     // If login successful
-    res.status(200).json({ message: "Login successful", status: 200 });
+    res.status(200).json({ message: "Login successful", status: 200, name : user.name });
   } catch (error) {
     console.error("Error in login:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+app.post('/api/kegiatan-sholat', async (req, res) => {
+  try {
+    const { username, sholatName, isChecked, catatan } = req.body;
+
+    // Simpan kegiatan sholat ke database menggunakan Prisma
+    const kegiatanSholat = await prisma.kegiatanSholat.create({
+      data: {
+        username,
+        sholatName,
+        isChecked,
+        catatan,
+      },
+    });
+
+    res.json({ success: true, data: kegiatanSholat });
+  } catch (error) {
+    console.error('Error saving kegiatan sholat:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000");

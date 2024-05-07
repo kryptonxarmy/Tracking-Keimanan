@@ -20,6 +20,7 @@ function Page() {
   const [imsakiyah, setImsakiyah] = useState(null);
   const [imsakTime, setImsakTime] = useState([]);
   const [nowTime, setNowTime] = useState(new Date());
+  const [nowImsak, setNowImsak] = useState([]);
   const [isTimePassed, setIsTimePassed] = useState(false);
 
   const dataImsakiyah = [
@@ -50,17 +51,6 @@ function Page() {
   const [namaSholat, setNamaSholat] = useState("");
   const [catatan, setCatatan] = useState("");
 
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleCatatanChange = (event) => {
-    setCatatan(event.target.value);
-  };
-
-  const handleNamaSholatChange = (event) => {
-    setNamaSholat(event.target.value);
-  };
 
   const handleSubmit = () => {
     // Lakukan sesuatu dengan nilai inputan, nama sholat, dan catatan, misalnya kirim ke backend
@@ -89,6 +79,19 @@ function Page() {
     }
   };
 
+  const PopUp = () => {
+    return (
+      <div className="h-screen w-screen bg-[#00000086] absolute z-40 flex justify-center items-center">
+        <div className="px-4 py-6 bg-white rounded-xl mx-auto flex flex-col items-center pt-8">
+          <CollapseDropdown />
+          <button onClick={handlePopUpChange} className="bg-green-400 rounded-md px-3 py-2">
+            kembali
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   const handlePopUpChange = () => {
     getImsakiyah();
     setPopUp(false);
@@ -96,10 +99,7 @@ function Page() {
 
   useEffect(() => {
     getImsakiyah();
-    const interval = setInterval(() => {
-      setNowTime(new Date());
-    }, 1000);
-    return () => clearInterval(interval);
+    setNowImsak(imsakiyah);
   }, []);
 
   return (
